@@ -1,0 +1,8 @@
+{
+    "@routes <route>[]": {
+        "@path": "string",
+        "@title": "string",
+        "@component": "expression",
+        "@initial": "boolean"
+    }
+}

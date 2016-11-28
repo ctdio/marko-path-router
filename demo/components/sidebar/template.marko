@@ -1,0 +1,59 @@
+var color=data.color
+var reveal=data.reveal
+var showOverlay=data.showOverlay
+var width=data.width
+var defaultWidth='250px'
+var rightSide=data.rightSide
+var floating=data.floating
+var header=data.header
+var body=data.body
+var footer=data.footer
+
+div [
+    class=[
+        'marko-drawer-container',
+        floating ? '' : 'pinned',
+        reveal ? 'reveal' : '',
+        rightSide ? 'rightSide' : ''
+    ]
+    style={
+        width: floating ? '0px' : width || '250px',
+        'margin-left': !rightSide && !floating && !reveal ? '-${width || defaultWidth}' : '0px',
+        'margin-right': rightSide && !floating && !reveal ? '-${width || defaultWidth}' : '0px',
+    }
+    w-bind
+]
+    div [
+        class=[
+            'marko-drawer',
+            floating ? 'floating' : '',
+            rightSide ? 'rightSide' : 'leftSide',
+            reveal ? 'reveal' : ''
+        ]
+        style={
+            width: width || '250px',
+            'margin-left': !rightSide && floating && !reveal ? '-${width || defaultWidth}' : '0px',
+            'margin-right': rightSide && floating && !reveal ? '-${width || defaultWidth}' : '0px',
+            'background-color': color
+        }
+        w-bind
+    ]
+        div [
+            class='marko-drawer-header-container'
+            if(header)
+            w-body=header.renderBody
+        ]
+        div [
+            class='marko-drawer-body-container'
+        ]
+            div [
+                if(body)
+                w-body=body.renderBody
+            ]
+
+        div [
+            class='marko-drawer-footer-container'
+            if(footer)
+            w-body=footer.renderBody
+        ]
+    div if(floating && reveal && showOverlay) class='marko-drawer-overlay' w-onClick='close'

@@ -1,0 +1,6 @@
+{
+    "tags-dir": [
+        "./demo/components",
+        "./src/components"
+    ]
+}

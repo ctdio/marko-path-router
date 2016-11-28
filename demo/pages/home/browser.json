@@ -1,0 +1,9 @@
+{
+    "dependencies" : [
+        "require: marko-widgets",
+        "require: ./widget",
+        "require: ../../components/sidebar",
+        "../../../node_modules/font-awesome/css/font-awesome.css",
+        "./styles.css"
+    ]
+}

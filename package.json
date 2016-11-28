@@ -1,0 +1,26 @@
+{
+  "name": "marko-router",
+  "version": "0.0.1",
+  "description": "Routing for marko widgets",
+  "main": "index.js",
+  "repository": {
+    "url": "https://github.com/charlieduong94/marko-router",
+    "type": "git"
+  },
+  "author": "Charlie Duong <charlieduong94@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "browser-refresh": "^1.6.0",
+    "font-awesome": "^4.7.0",
+    "lasso": "^2.6.1",
+    "lasso-marko": "^2.0.7"
+  },
+  "dependencies": {
+    "marko": "^3.11.8",
+    "marko-floating-action-button": "^1.1.0",
+    "marko-snackbars": "^1.5.1",
+    "marko-widgets": "^6.3.7",
+    "radix-router": "^0.1.4",
+    "require-self-ref": "^2.0.1"
+  }
+}

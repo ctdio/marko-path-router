@@ -1,0 +1,10 @@
+{
+    "@header <header>": {},
+    "@body <body>": {},
+    "@footer <footer>": {},
+    "@floating": "boolean",
+    "@reveal": "boolean",
+    "@rightSide": "boolean",
+    "@color": "string",
+    "@width": "string"
+}
