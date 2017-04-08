@@ -1,13 +1,13 @@
-var color=data.color
-var reveal=data.reveal
-var showOverlay=data.showOverlay
-var width=data.width
-var defaultWidth='250px'
-var rightSide=data.rightSide
-var floating=data.floating
-var header=data.header
-var body=data.body
-var footer=data.footer
+$ var color=state.color
+$ var reveal=state.reveal
+$ var showOverlay=state.showOverlay
+$ var width=state.width
+$ var defaultWidth='250px'
+$ var rightSide=state.rightSide
+$ var floating=state.floating
+$ var header=state.header
+$ var body=state.body
+$ var footer=state.footer
 
 div [
     class=[
@@ -21,7 +21,6 @@ div [
         'margin-left': !rightSide && !floating && !reveal ? '-${width || defaultWidth}' : '0px',
         'margin-right': rightSide && !floating && !reveal ? '-${width || defaultWidth}' : '0px',
     }
-    w-bind
 ]
     div [
         class=[
@@ -36,24 +35,11 @@ div [
             'margin-right': rightSide && floating && !reveal ? '-${width || defaultWidth}' : '0px',
             'background-color': color
         }
-        w-bind
     ]
-        div [
-            class='marko-drawer-header-container'
-            if(header)
-            w-body=header.renderBody
-        ]
-        div [
-            class='marko-drawer-body-container'
-        ]
-            div [
-                if(body)
-                w-body=body.renderBody
-            ]
-
-        div [
-            class='marko-drawer-footer-container'
-            if(footer)
-            w-body=footer.renderBody
-        ]
-    div if(floating && reveal && showOverlay) class='marko-drawer-overlay' w-onClick='close'
+        div class='marko-drawer-header-container' if(header)
+          include(header.renderBody)
+        div class='marko-drawer-body-container' if(body)
+          include(body.renderBody)
+        div class='marko-drawer-footer-container' if(footer)
+          include(footer.renderBody)
+    div if(floating && reveal && showOverlay) class='marko-drawer-overlay' onClick('close')

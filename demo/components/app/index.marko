@@ -1,0 +1,43 @@
+$ var homeComponent = require('../home')
+$ var beerComponent = require('../beer')
+$ var chartsComponent = require('../charts')
+
+div.app
+  div.app-body
+    sidebar [
+        key='sidebar'
+        reveal=data.showSidebar
+        color='#448AFF'
+    ]
+      sidebar:header
+        div.drawer-header
+            label.drawer-header-label
+              -- Header
+      sidebar:body
+        div.drawer-section
+          label.drawer-list-header
+            -- Routes
+          ul.drawer-list
+            li onClick('handleLinkClick') data-route='/'
+              i class='fa fa-home'
+              label.list-label
+                -- Home
+            li onClick('handleLinkClick') data-route='/charts'
+              i class='fa fa-pie-chart'
+              label.list-label
+                -- Charts
+            li onClick('handleLinkClick') data-route='/beer'
+              i class='fa fa-beer'
+              label.list-label
+                -- Beer
+      sidebar:footer
+    div.app-container
+      div.app-header
+        i class='button fa fa-2x fa-bars' onClick('toggleSidebar')
+      div.app-content
+        router if(state.ready) initialRoute='/'
+          route path='/' component=homeComponent
+          route path='/charts' component=chartsComponent
+            route path='/beer' component=beerComponent
+              route path='/cobrowse' component=beerComponent
+          route path='/beer' component=beerComponent
