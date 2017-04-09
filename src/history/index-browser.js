@@ -1,5 +1,5 @@
 /**
- * Singleton History object t
+ * Singleton History object
  */
 var util = require('util')
 var EventEmitter = require('events')
@@ -17,7 +17,7 @@ function History () {
     let component
 
     if (newState) {
-      routeData = router.lookup(newState.path).data
+      routeData = router.lookup(newState.path)
       component = routeData.component
     }
 
@@ -33,14 +33,14 @@ util.inherits(History, EventEmitter)
 History.prototype.push = function (path, componentState) {
   var self = this
   console.log(self.router)
-  var route = self.router.lookup(path)
-  if (!route.data) {
+  var routeData = self.router.lookup(path)
+  if (!routeData) {
     throw new Error('Unable to find route ' + path)
   }
-  var title = route.data.title
-  var component = route.data.component
+  var title = routeData.title
+  var component = routeData.component
   console.log('component', component)
-  var params = route.data.params
+  var params = routeData.params
 
   componentState.params = params
 
@@ -60,7 +60,7 @@ History.prototype.push = function (path, componentState) {
 }
 
 History.prototype.findRoute = function (path) {
-  return this.router.lookup(path).data
+  return this.router.lookup(path)
 }
 
 History.prototype.pop = function () {
@@ -78,14 +78,15 @@ History.prototype.registerRoute = function (path, routeData) {
 
   if (path && component) {
     console.log('registering route', path, component)
-    this.router.insert(path, {
+    this.router.insert({
+      path: path,
       component: component
     })
   }
 }
 
 History.prototype.removeRoute = function (path) {
-  return !!this.router.delete(path)
+  return this.router.remove(path)
 }
 
 History.prototype.getCurrentState = function () {
