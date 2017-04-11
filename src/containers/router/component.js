@@ -10,10 +10,8 @@ module.exports = {
     history.on('change-route', function (event) {
       var component = event.component
       if (component) {
-        console.log('component before render', component)
-        console.log(component.createOut(null, null, null ))
-        var componentState = event.historyState.componentState
-        var renderedComponent = component.renderSync(componentState)
+        var componentInput = event.historyState.componentInput
+        var renderedComponent = component.renderSync(componentInput)
         self.setComponent(renderedComponent)
       }
     })

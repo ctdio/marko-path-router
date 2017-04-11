@@ -10,6 +10,7 @@ var history = window ? window.history : {}
 function History () {
   var self = this
   var router = self.router = new RadixRouter()
+  self.currentPath = null
 
   window.addEventListener('popstate', function (event) {
     let newState = event.state
@@ -31,31 +32,69 @@ function History () {
 util.inherits(History, EventEmitter)
 
 History.prototype.push = function (path, componentState) {
-  var self = this
-  console.log(self.router)
-  var routeData = self.router.lookup(path)
-  if (!routeData) {
-    throw new Error('Unable to find route ' + path)
+  let self = this
+
+  let router = self.router
+
+  let oldPath = self.currentPath
+  if (oldPath === path) {
+    return
   }
-  var title = routeData.title
-  var component = routeData.component
-  console.log('component', component)
-  var params = routeData.params
 
-  componentState.params = params
+  self.currentPath = path
 
-  var state = {
+  let routeData = router.lookup(path)
+  if (!routeData) {
+    throw new Error('Unable to find route' + path)
+  }
+
+
+  let title = routeData.title
+  let params = routeData.params
+  let parentComponentPath = routeData.parentPath
+  let currentComponent = routeData.component
+
+  let currentPath = path
+  let currentComponentInput = componentState
+
+  // todo: move this over to the router component to handle
+  // also, how to set state for parent component?
+  while (parentComponentPath) {
+    let parentRouteData = router.lookup(parentComponentPath)
+    let parentComponent = parentRouteData.component
+
+    // copy current component and input into new let so that
+    // it can be used by new renderBody function for parent
+    let childComponent = currentComponent
+    let childComponentInput = currentComponentInput
+
+    let parentComponentInput = {
+      renderBody: function (out) {
+        childComponent.render(childComponentInput, out)
+      }
+    }
+
+    // current component becomes the parent component
+    currentComponent = parentComponent
+    currentComponentInput = parentComponentInput
+
+    parentComponentPath = parentRouteData.parentPath
+  }
+
+  console.log('final input', currentComponentInput)
+
+  let state = {
     title: title,
     path: path,
-    componentState: componentState
+    componentInput: currentComponentInput
   }
 
-  history.pushState(state, title, path)
-  let newState = Object.assign(state, {history: this})
+  //history.pushState(state, title, path)
+  let newState = Object.assign(state, { history: this })
 
   self.emit('change-route', {
     historyState: newState,
-    component: component
+    component: currentComponent
   })
 }
 
@@ -75,12 +114,14 @@ History.prototype.replace = function () {
 History.prototype.registerRoute = function (path, routeData) {
   console.log('attempting to register route at path', path, routeData)
   var component = routeData.component
+  var parentPath = routeData.parentPath
 
   if (path && component) {
-    console.log('registering route', path, component)
+    console.log('registering route', path, component, parentPath)
     this.router.insert({
       path: path,
-      component: component
+      component: component,
+      parentPath: parentPath
     })
   }
 }

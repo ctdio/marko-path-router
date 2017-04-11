@@ -1,5 +1,14 @@
 div
-  label
-    -- this is a component yo
-  button onClick('handleClick')
-    --  Move to other component
+  p
+    -- this is the Charts component
+  button onClick('handleBeerClick')
+    --  Move to /beer
+  button onClick('handleNestedChartClick')
+    --  Move to /charts/nested-chart
+  button onClick('handleDeepNestedChartClick')
+    --  Move to /charts/nested-chart/deep-nested-chart
+  p
+    -- nested routes will show up below
+  if(input.renderBody)
+    include(input.renderBody)
+

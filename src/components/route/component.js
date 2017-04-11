@@ -21,7 +21,7 @@ module.exports = {
       // TODO: clean
       if (parent.className === 'marko-route') {
         var parentPath = parent.getAttribute('data-path')
-        parentComponentPath = path
+        parentComponentPath = parentComponentPath ? parentPath + parentComponentPath : parentPath
         path = parentPath ? parentPath + path : currentPath
       }
 
@@ -29,12 +29,10 @@ module.exports = {
       parent = parent.parentNode
     } while (_parentIsValid(parent))
 
-    console.log('final path', path)
-
     if (valid) {
       if (history.registerRoute) {
+        console.log('parent component path', parentComponentPath)
         history.registerRoute(path, {
-          path,
           component,
           parentPath: parentComponentPath
         })

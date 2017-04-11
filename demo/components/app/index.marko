@@ -1,12 +1,14 @@
 $ var homeComponent = require('../home')
 $ var beerComponent = require('../beer')
 $ var chartsComponent = require('../charts')
+$ var nestedChartComponent = require('../nested-chart')
+$ var deepNestedChartComponent = require('../deep-nested-chart')
 
 div.app
   div.app-body
     sidebar [
         key='sidebar'
-        reveal=data.showSidebar
+        reveal=true
         color='#448AFF'
     ]
       sidebar:header
@@ -38,6 +40,7 @@ div.app
         router if(state.ready) initialRoute='/'
           route path='/' component=homeComponent
           route path='/charts' component=chartsComponent
-            route path='/beer' component=beerComponent
-              route path='/cobrowse' component=beerComponent
+            route path='/nested-chart' component=nestedChartComponent
+              route path='/deep-nested-chart' component=deepNestedChartComponent
+          route path='/deep-nested-chart' component=deepNestedChartComponent
           route path='/beer' component=beerComponent
