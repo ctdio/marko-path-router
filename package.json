@@ -1,5 +1,5 @@
 {
-  "name": "marko-router",
+  "name": "marko-component-router",
   "version": "0.0.1",
   "description": "Routing for marko widgets",
   "main": "index.js",

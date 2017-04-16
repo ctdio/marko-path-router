@@ -31,7 +31,6 @@ module.exports = {
 
     if (valid) {
       if (history.registerRoute) {
-        console.log('parent component path', parentComponentPath)
         history.registerRoute(path, {
           component,
           parentPath: parentComponentPath
@@ -40,7 +39,6 @@ module.exports = {
     } else {
       throw new Error('<route> component parent must be either a <router> or another <route>')
     }
-
   },
 
   onInput: function (input) {
