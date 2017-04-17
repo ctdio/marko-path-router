@@ -11,6 +11,7 @@ module.exports = {
     try {
       router.register(path, render.getComponent())
     } catch (err) {
+      console.warn('No component to retrieve at path:', path)
     }
   },
 

@@ -5,7 +5,6 @@ function _parentIsValid (parent) {
   return parent && (className === 'marko-route' || className === 'marko-defined-routes')
 }
 
-
 module.exports = {
   onMount: function () {
     var el = this.getEl()
@@ -18,11 +17,10 @@ module.exports = {
     var valid = _parentIsValid(parent)
     do {
       // start linking to parent component here
-      // TODO: clean
       if (parent.className === 'marko-route') {
         var parentPath = parent.getAttribute('data-path')
         parentComponentPath = parentComponentPath ? parentPath + parentComponentPath : parentPath
-        path = parentPath ? parentPath + path : currentPath
+        path = parentPath ? parentPath + path : path
       }
 
       // if on browser, register the component

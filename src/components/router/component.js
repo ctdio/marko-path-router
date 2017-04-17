@@ -1,7 +1,7 @@
 'use strict'
 require('./styles.css')
 var history = require('../../history')
-var nested = require('../nested')
+var nestedRoutePlaceholder = require('../nested-route-placeholder')
 
 module.exports = {
   onCreate: function () {
@@ -24,12 +24,10 @@ module.exports = {
       let component = routeData.component
       let componentInput = {}
 
-      let existingComponentPath
       let componentStack = self.componentStack
 
       if (component) {
         let existingComponent
-        let existingComponentPath
 
         // if a component's parent route is found within the component stack,
         // (traverse backwards), then slice off the remaining parts if
@@ -46,7 +44,7 @@ module.exports = {
 
           let parentComponentInput = {
             renderBody: function (out) {
-              nested.render({
+              nestedRoutePlaceholder.render({
                 path: childComponentPath,
                 component: childComponent,
                 componentInput: childComponentInput,
@@ -67,7 +65,6 @@ module.exports = {
             let existingComponentData = componentStack[stackIndex]
             let path = existingComponentData.path
 
-            let pathFound = false
             if (path === routePath) {
               componentInput = {}
               existingComponent = existingComponentData.component
@@ -89,7 +86,6 @@ module.exports = {
             break
           }
 
-
           parentPath = parentRouteData.parentPath
         }
 
@@ -98,38 +94,41 @@ module.exports = {
           existingComponent.update()
           self.componentStack = componentStack.concat(self.componentBuffer.reverse())
         } else {
-          var render= component.renderSync(componentInput)
+          var render = component.renderSync(componentInput)
           render.replaceChildrenOf(self.getEl('mount-point'))
-
           // Todo: handle renderers that are not strictly components
           try {
             self.componentStack = [{
               path: componentPath,
-              component: renderedComponent.getComponent()
+              component: render.getComponent()
             }]
           } catch (err) {
             console.warn('No component to retrieve, not pushing to stack')
           }
-
         }
 
         self.componentBuffer = []
         self.currentRoute = routePath
+        self.emit('update')
       }
     })
 
     if (initialRoute) {
-        try {
-          history.push(initialRoute, {})
-          this.currentRoute = initialRoute
-        } catch (err) {
-          throw new Error('Unable to push initial route ' + err)
-        }
+      try {
+        history.push(initialRoute, {})
+        this.currentRoute = initialRoute
+      } catch (err) {
+        throw new Error('Unable to push initial route ' + err)
+      }
     }
   },
 
   onInput: function (input) {
     this.initialRoute = input.initialRoute
+  },
+
+  onDestroy: function () {
+    // clear history?
   },
 
   // registers rendered components and their path with the router

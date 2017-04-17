@@ -14,7 +14,6 @@ function History () {
 
   window.addEventListener('popstate', function (event) {
     const state = event.state
-    const title = event.title
 
     let routeData
     let parentPath
@@ -34,7 +33,7 @@ function History () {
 
 util.inherits(History, EventEmitter)
 
-History.prototype.push = function (path, componentState) {
+History.prototype.push = function (path) {
   let self = this
 
   let router = self.router
@@ -51,21 +50,12 @@ History.prototype.push = function (path, componentState) {
     throw new Error('Unable to find route ' + path)
   }
 
-  let title = routeData.title
-  let params = routeData.params
-  let parentComponentPath = routeData.parentPath
-  let currentComponent = routeData.component
-
-  let currentPath = path
-  let currentComponentInput = componentState
-
   let state = {
-    title: title,
     path: path
   }
 
-
-  history.pushState(state, title, path)
+  // TODO: implement title
+  history.pushState(state, '', path)
   self.emit('change-route', state)
 }
 
@@ -74,7 +64,7 @@ History.prototype.findRoute = function (path) {
 }
 
 History.prototype.pop = function () {
-  let result = history.back()
+  history.back()
 }
 
 History.prototype.replace = function () {

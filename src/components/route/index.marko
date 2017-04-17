@@ -1,2 +1,3 @@
 div class='marko-route' data-path=component.inputPath data-full-path=component.fullPath
-  include(input.renderBody)
+  if(input.renderBody)
+    include(input.renderBody)
