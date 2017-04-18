@@ -23,7 +23,6 @@ module.exports = {
         path = parentPath ? parentPath + path : path
       }
 
-      // if on browser, register the component
       parent = parent.parentNode
     } while (_parentIsValid(parent))
 
