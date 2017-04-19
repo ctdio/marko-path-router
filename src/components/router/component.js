@@ -16,6 +16,7 @@ module.exports = {
 
     history.on('change-route', function (event) {
       let routePath = event.path
+      console.log('routePath', routePath)
       let routeData = history.findRoute(routePath)
       let parentPath = routeData.parentPath
 
@@ -29,10 +30,19 @@ module.exports = {
       if (component) {
         let existingComponent
 
-        // if a component's parent route is found within the component stack,
-        // (traverse backwards), then slice off the remaining parts if
-        // an existing component is found
-        while (parentPath) {
+        // if the component already exists in the component stack, find it and exit
+        for (var i = 0; i < componentStack.length; i++) {
+          if (routePath === componentStack[i].path) {
+            existingComponent = componentStack[i].component
+            componentStack = componentStack.slice(0, i + 1)
+            break
+          }
+        }
+
+        // while there is a parentPath, get the component and render the current
+        // component within the parent. Continue until no more parents or
+        // existing parent is found
+        while (parentPath && !existingComponent) {
           let parentRouteData = history.findRoute(parentPath)
           let parentComponent = parentRouteData.component
 
@@ -60,7 +70,9 @@ module.exports = {
 
           let stackIndex = componentStack.length - 1
 
-          // exit early if currentRoute is the parent, we can just set state
+          // if no existing component found and component has a parent route,
+          // traverse backwards, then slice off the remaining parts if
+          // an existing component is found
           while (stackIndex >= 0) {
             let existingComponentData = componentStack[stackIndex]
             let path = existingComponentData.path
