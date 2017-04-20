@@ -6,7 +6,7 @@ module.exports = {
     let componentInput = this.state.componentInput
 
     let render = component.renderSync(componentInput)
-    render.appendTo(this.getEl())
+    render.replace(this.getEl())
 
     try {
       router.register(path, render.getComponent())

@@ -6,25 +6,30 @@ function _parentIsValid (parent) {
 }
 
 module.exports = {
+  // TODO: figure out how to cleanly pass down full parent path
+  // so that the registering can be done in the onCreate hook
   onMount: function () {
-    var el = this.getEl()
-    var parent = el.parentNode
-    var component = this.component
+    let input = this.input
 
-    var parentComponentPath
-    var path = this.inputPath
+    let el = this.getEl()
+    let parent = el.parentNode
 
-    var valid = _parentIsValid(parent)
-    do {
+    let path = input.path
+    let component = input.component
+
+    let parentComponentPath
+
+    let valid = _parentIsValid(parent)
+    while (parent && _parentIsValid(parent)) {
       // start linking to parent component here
       if (parent.className === 'marko-route') {
-        var parentPath = parent.getAttribute('data-path')
+        let parentPath = parent.getAttribute('data-path')
         parentComponentPath = parentComponentPath ? parentPath + parentComponentPath : parentPath
         path = parentPath ? parentPath + path : path
       }
 
       parent = parent.parentNode
-    } while (_parentIsValid(parent))
+    }
 
     if (valid) {
       if (history.registerRoute) {
@@ -39,10 +44,7 @@ module.exports = {
   },
 
   onInput: function (input) {
-    this.inputPath = input.path
-    this.component = input.component
-
-    if (!this.inputPath || !this.component) {
+    if (!input.path || !input.component) {
       throw new Error('Invalid input for <route> component')
     }
   }

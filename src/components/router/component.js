@@ -1,5 +1,4 @@
 'use strict'
-require('./styles.css')
 var history = require('../../history')
 var nestedRoutePlaceholder = require('../nested-route-placeholder')
 
