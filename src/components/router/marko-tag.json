@@ -1,4 +1,4 @@
 {
   "@initialRoute": "string",
-  "@routes": "object"
+  "@routeProvider": "function"
 }

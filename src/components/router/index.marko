@@ -1,2 +1,4 @@
 div class='marko-router'
   div key='mount-point' class='marko-router-mount-point'
+    if(component._renderBody)
+      include(component._renderBody)

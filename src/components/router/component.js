@@ -120,8 +120,16 @@ function _handleRouteChange (self) {
         existingComponent.input = componentInput
         existingComponent.update()
       } else {
-        var render = component.renderSync(componentInput)
-        render.replaceChildrenOf(self.getEl('mount-point'))
+        //var render = component.renderSync(componentInput)
+        //render.replaceChildrenOf(self.getEl('mount-point'))
+
+        self._renderBody = function (out) {
+          component.render(componentInput, out)
+        }
+
+        if (self.update) {
+          self.update()
+        }
 
         // TODO: handle renderers that are not components
         try {
@@ -138,14 +146,28 @@ function _handleRouteChange (self) {
 
       self._componentBuffer = []
       self.currentRoute = routePath
-      self.emit('update')
+
+      if (self.emit) {
+        self.emit('update')
+      }
     }
   }
 }
 
 module.exports = {
   onCreate: function (input) {
-    const routes = input.routes
+    const self = this
+    const provider = input.routeProvider
+
+    console.log(provider, provider.getRoutes)
+
+    console.log(typeof provider.getRoutes)
+    if (!provider || typeof provider.getRoutes !== 'function') {
+      console.log('provider function must be supplied')
+    }
+
+    const routes = provider.getRoutes()
+    console.log(routes)
 
     if (!routes) {
       throw new Error('"routes" param must be provided')
@@ -153,31 +175,49 @@ module.exports = {
       throw new Error('"routes" list cannot be empty')
     }
 
-    const router = this._router = input.router || history.getRouter()
+    const router = self._router = input.router || history.getRouter()
 
     // maintain a stack of components that are currently rendered
-    this._componentStack = []
-    this._componentBuffer = []
-    this.initialRoute = input.initialRoute
+    self._componentStack = []
+    self._componentBuffer = []
+    const initialRoute = self.initialRoute = input.initialRoute
 
     // traverse the given routes and create the router
-    _registerRoutes(router, input.routes, undefined)
+    _registerRoutes(router, routes, undefined)
+
+    self.changeHandler = _handleRouteChange(self)
+
+    let routeData = router.lookup(initialRoute)
+    if (routeData) {
+      self.changeHandler(routeData)
+    }
   },
 
   onMount: function () {
     const self = this
     const initialRoute = self.input && self.input.initialRoute
+    const input = self.input
+    let router = self._router
 
-    let changeHandler = _handleRouteChange(self)
+    return
+    if (router.lookup) {
+      router = self._router = input.router || history.getRouter()
+      let provider = input.routeProvider
+      let routes = provider.getRoutes()
+      _registerRoutes(router, routes, undefined)
+    }
+
+    let changeHandler = self.changeHandler || _handleRouteChange(self)
+
     history.on('change-route', changeHandler)
 
     self.on('destroy', () => {
       history.removeListener('change-route', changeHandler)
     })
 
-    if (initialRoute) {
+    if (false && initialRoute) {
       try {
-        history.push(initialRoute, {})
+        history.push(initialRoute)
         self.currentRoute = initialRoute
       } catch (err) {
         throw new Error('Unable to push initial route ' + err)
