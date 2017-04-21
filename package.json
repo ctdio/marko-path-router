@@ -1,10 +1,10 @@
 {
-  "name": "marko-component-router",
+  "name": "marko-path-router",
   "version": "0.0.1",
   "description": "Routing for marko widgets",
   "main": "index.js",
   "repository": {
-    "url": "https://github.com/charlieduong94/marko-router",
+    "url": "https://github.com/charlieduong94/marko-path-router",
     "type": "git"
   },
   "scripts": {
