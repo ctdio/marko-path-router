@@ -5,38 +5,45 @@ const util = require('util')
 const EventEmitter = require('events')
 const RadixRouter = require('radix-router')
 
-const history = window ? window.history : {}
+const browserHistory = window.history
 
 function History () {
   let self = this
-  let router = self.router = new RadixRouter()
+  let router = self._router = new RadixRouter()
   self.currentPath = null
 
   window.addEventListener('popstate', function (event) {
     const state = event.state
+    if (state) {
+      let path = state.path
 
-    let routeData
-    let parentPath
-    let component
+      let routeData
+      let parentPath
+      let component
 
-    routeData = router.lookup(state.path)
-    component = routeData.component
-    parentPath = routeData.parentPath
+      routeData = router.lookup(path)
+      component = routeData.component
+      parentPath = routeData.parentPath
 
-    self.emit('change-route', {
-      path: state.path,
-      parentPath: parentPath,
-      component: component
-    })
+      self.emit('change-route', {
+        path: path,
+        parentPath: parentPath,
+        component: component
+      })
+    }
   })
 }
 
 util.inherits(History, EventEmitter)
 
+History.prototype.getRouter = function () {
+  return this._router
+}
+
 History.prototype.push = function (path) {
   let self = this
 
-  let router = self.router
+  let router = self._router
 
   let oldPath = self.currentPath
   if (oldPath === path) {
@@ -55,41 +62,12 @@ History.prototype.push = function (path) {
   }
 
   // TODO: implement title
-  history.pushState(state, '', path)
+  browserHistory.pushState(state, '', path)
   self.emit('change-route', state)
 }
 
-History.prototype.findRoute = function (path) {
-  return this.router.lookup(path)
-}
-
 History.prototype.pop = function () {
-  history.back()
-}
-
-History.prototype.replace = function () {
-  history.forward()
-}
-
-History.prototype.registerRoute = function (path, routeData) {
-  var component = routeData.component
-  var parentPath = routeData.parentPath
-
-  if (path && component) {
-    this.router.insert({
-      path: path,
-      component: component,
-      parentPath: parentPath
-    })
-  }
-}
-
-History.prototype.removeRoute = function (path) {
-  return this.router.remove(path)
-}
-
-History.prototype.getCurrentState = function () {
-  return history.state
+  browserHistory.back()
 }
 
 module.exports = new History()

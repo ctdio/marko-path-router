@@ -8,11 +8,13 @@
     "type": "git"
   },
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "marko test"
   },
   "author": "Charlie Duong <charlieduong94@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "babel-preset-env": "^1.4.0",
     "browser-refresh": "^1.6.0",
     "eslint": "^3.19.0",
     "eslint-config-standard": "^7.1.0",
@@ -21,7 +23,9 @@
     "font-awesome": "^4.7.0",
     "git-hooks": "^1.1.8",
     "lasso": "^2.6.1",
-    "lasso-marko": "^2.0.7"
+    "lasso-babel-transform": "^1.0.0",
+    "lasso-marko": "^2.0.7",
+    "marko-devtools": "^1.0.2"
   },
   "dependencies": {
     "marko": "^4.2.8",

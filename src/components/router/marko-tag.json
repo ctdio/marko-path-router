@@ -1,3 +1,4 @@
 {
-  "@initialRoute": "string"
+  "@initialRoute": "string",
+  "@routes": "object"
 }
