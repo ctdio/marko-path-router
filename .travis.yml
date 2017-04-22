@@ -1,3 +1,7 @@
 language: node_js
 
-script: "npm test"
+node_js:
+  - "7"
+  - "6"
+
+script: npm test
