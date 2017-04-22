@@ -93,10 +93,28 @@ describe('router', function () {
       let matches = checkIfComponentOutputMatches(component, /test-component/g)
       assert(matches === null, 'Router should not have rendered any test components')
 
+      let historyLen = window.history.length
       history.push('/route')
 
       matches = checkIfComponentOutputMatches(component, /test-component/g)
       assert(matches.length === 1, 'A test component should have been rendered')
+      assert(window.history.length === historyLen + 1, 'History should have been pushed')
+    })
+
+    it('should be able to render route based on path replaced by history', () => {
+      let matches = checkIfComponentOutputMatches(component, /test-component/g)
+      assert(matches === null, 'Router should not have rendered any test components')
+
+      history.push('/route/nested')
+
+      let historyLen = window.history.length
+      history.replace('/route')
+
+      matches = checkIfComponentOutputMatches(component, /test-component/g)
+      assert(matches.length === 1, 'A test component should have been rendered')
+
+      assert(window.history.length === historyLen, 'History should have been replaced')
+      assert(window.history.state.path === '/route')
     })
 
     it('should be able to render nested routes', () => {
