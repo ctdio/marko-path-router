@@ -3,6 +3,8 @@ const assert = require('assert')
 
 const Router = require('../index')
 const TestComponent = require('../../../../test/util/test-component')
+const PlaceholderComponent = require('../../../../test/util/test-placeholder-component')
+const WildcardComponent = require('../../../../test/util/test-wildcard-component')
 const history = require('../../../history')
 
 const SHOULD_NOT_GET_HERE = new Error('Should not get here.')
@@ -73,7 +75,24 @@ describe('router', function () {
             path: '/route',
             component: TestComponent,
             nestedRoutes: [
-              { path: '/nested', component: TestComponent }
+              {
+                path: '/nested',
+                component: TestComponent,
+                nestedRoutes: [
+                  {
+                    path: '/:placeholder/info',
+                    component: PlaceholderComponent
+                  }
+                ]
+              },
+              {
+                path: '/other-nested',
+                component: TestComponent,
+                nestedRoutes: [
+                  { path: '/deep-nested', component: TestComponent },
+                  { path: '/**', component: WildcardComponent }
+                ]
+              }
             ]
           }
         ]
@@ -125,6 +144,36 @@ describe('router', function () {
 
       matches = checkIfComponentOutputMatches(component, /test-component/g)
       assert(matches.length === 2, 'Multiple test components should have been rendered')
+    })
+
+    it('should be able to match placeholder routes', () => {
+      const placeholderFiller = 'some-filler-for-placeholder'
+      let matches = checkIfComponentOutputMatches(component, /test-component/g)
+      assert(matches === null, 'Router should not have rendered any test components')
+
+      history.push('/route/nested/' + placeholderFiller + '/info')
+
+      matches = checkIfComponentOutputMatches(component, /test-component/g)
+      assert(matches.length === 2, 'Multiple test components should have been rendered')
+
+      matches = checkIfComponentOutputMatches(component, /placeholder-component/g)
+      assert(matches.length === 1, 'Should have found placeholder component')
+
+      matches = checkIfComponentOutputMatches(component, placeholderFiller)
+      assert(matches.length === 1, 'Should have found placeholder data')
+    })
+
+    it('should be able to match wildcard routes', () => {
+      let matches = checkIfComponentOutputMatches(component, /test-component/g)
+      assert(matches === null, 'Router should not have rendered any test components')
+
+      history.push('/route/other-nested/aoij3illjicsef')
+
+      matches = checkIfComponentOutputMatches(component, /test-component/g)
+      assert(matches.length === 2, 'Multiple test components should have been rendered')
+
+      matches = checkIfComponentOutputMatches(component, /wildcard-component/g)
+      assert(matches.length === 1, 'Should have found wildcard component')
     })
 
     it('should not rerender existing components', () => {

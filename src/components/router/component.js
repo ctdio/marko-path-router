@@ -41,11 +41,15 @@ function _handleRouteChange (self) {
     }
 
     let parentPath = routeData.parentPath
+    const params = routeData.params
 
     // path of the component that is going to be rendered
     let componentPath = routePath
     let component = routeData.component
     let componentInput = {}
+    if (params) {
+      componentInput.params = params
+    }
 
     let componentStack = self._componentStack
 
