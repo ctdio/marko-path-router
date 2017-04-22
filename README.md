@@ -1,5 +1,7 @@
 # marko-path-router
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/charlieduong94/marko-path-router.svg)](https://greenkeeper.io/)
+
 [![Build Status](https://travis-ci.org/charlieduong94/marko-path-router.svg?branch=master)](https://travis-ci.org/charlieduong94/marko-path-router)
 
 Client side routing for [Marko](https://github.com/marko-js/marko) that provides support for
