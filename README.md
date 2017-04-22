@@ -49,7 +49,7 @@ div.my-app
     router routes=state.routes initialRoute='/'
 ```
 
-In the example above, the `home-component` will be rendered within the `router` component.
+In the example above, the `home` component will be rendered within the `router` component.
 
 **Note:** It is recommended that the router is placed within a element that is marked with `no-update`.
 This will ensure that the router will not get rerendered by it's parent and will prevent
