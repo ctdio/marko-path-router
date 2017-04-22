@@ -3,67 +3,38 @@
  */
 const util = require('util')
 const EventEmitter = require('events')
-const RadixRouter = require('radix-router')
 
 const browserHistory = window.history
 
 function History () {
   let self = this
-  let router = self._router = new RadixRouter()
-  self.currentPath = null
+  self._currentPath = null
 
   window.addEventListener('popstate', function (event) {
     const state = event.state
     if (state) {
-      let path = state.path
-
-      let routeData
-      let parentPath
-      let component
-
-      routeData = router.lookup(path)
-      component = routeData.component
-      parentPath = routeData.parentPath
-
-      self.emit('change-route', {
-        path: path,
-        parentPath: parentPath,
-        component: component
-      })
+      self.emit('change-route', state.path)
     }
   })
 }
 
 util.inherits(History, EventEmitter)
 
-History.prototype.getRouter = function () {
-  return this._router
-}
-
 History.prototype.push = function (path) {
   let self = this
+  let oldPath = self._currentPath
 
-  let router = self._router
-
-  let oldPath = self.currentPath
+  // if old path matches current path, do nothing
   if (oldPath === path) {
     return
   }
 
-  self.currentPath = path
-
-  let routeData = router.lookup(path)
-  if (!routeData) {
-    throw new Error('Unable to find route ' + path)
-  }
-
-  let state = {
-    path: path
-  }
+  self._currentPath = path
 
   // TODO: implement title
+  const state = { path: path }
   browserHistory.pushState(state, '', path)
-  self.emit('change-route', state)
+  self.emit('change-route', path)
 }
 
 History.prototype.pop = function () {

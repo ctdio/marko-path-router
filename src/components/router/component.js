@@ -3,6 +3,8 @@ const history = require('../../history')
 const nestedRoutePlaceholder = require('../nested-route-placeholder')
 const assert = require('assert')
 
+const RadixRouter = require('radix-router')
+
 /**
  * Inserts the routes all of the routes into the components
  */
@@ -30,9 +32,14 @@ function _registerRoutes (router, routes, parentPath) {
 function _handleRouteChange (self) {
   const router = self._router
 
-  return function (event) {
-    let routePath = event.path
+  return function (routePath) {
     let routeData = router.lookup(routePath)
+
+    if (!routeData) {
+      self.emit('not-found')
+      return
+    }
+
     let parentPath = routeData.parentPath
 
     // path of the component that is going to be rendered
@@ -90,13 +97,13 @@ function _handleRouteChange (self) {
         // an existing component is found
         while (stackIndex >= 0) {
           let existingComponentData = componentStack[stackIndex]
-          let path = existingComponentData.path
+          let existingPath = existingComponentData.path
 
-          if (path === routePath) {
+          if (existingPath === routePath) {
             componentInput = {}
             existingComponent = existingComponentData.component
             break
-          } else if (path === parentPath) {
+          } else if (existingPath === parentPath) {
             existingComponent = existingComponentData.component
             break
           }
@@ -153,7 +160,7 @@ module.exports = {
       throw new Error('"routes" list cannot be empty')
     }
 
-    const router = this._router = input.router || history.getRouter()
+    const router = this._router = new RadixRouter()
 
     // maintain a stack of components that are currently rendered
     this._componentStack = []
@@ -183,10 +190,6 @@ module.exports = {
         throw new Error('Unable to push initial route ' + err)
       }
     }
-  },
-
-  onDestroy: function () {
-    // clear history?
   },
 
   register: function (path, component) {

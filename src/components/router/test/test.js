@@ -79,7 +79,7 @@ describe('router', function () {
         ]
       })
       // force history to "forget" what has happened
-      history.currentPath = null
+      history._currentPath = null
 
       component = render.appendTo(document.body)
         .getComponent()
@@ -114,7 +114,7 @@ describe('router', function () {
 
       let componentStack = component._componentStack
 
-      assert(componentStack.length === 2, 'There should be two components being tracked by the router')
+      assert(componentStack.length === 2, 'There should be two components being tracked by the router. Actual = ' + componentStack.length)
 
       let rootComponent = componentStack[0].component
       let nestedComponent = componentStack[1].component
@@ -142,14 +142,16 @@ describe('router', function () {
       assert(rootComponentUpdated, 'Root component should have been just updated')
     })
 
-    it('should throw error if path that does not exist is pushed', () => {
-      try {
-        history.push('/route that does not exist')
-        throw SHOULD_NOT_GET_HERE
-      } catch (err) {
-        let match = err.message.match(/Unable to find route \/route/)
-        assert(match)
-      }
+    it('should emit an event when a route that is not found given', () => {
+      let notFoundTriggered = false
+
+      component.on('not-found', () => {
+        notFoundTriggered = true
+      })
+
+      history.push('/route that does not exist')
+
+      assert(notFoundTriggered, 'not-found event shoud have been triggered')
     })
   })
 })
