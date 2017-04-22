@@ -7,7 +7,8 @@ module.exports = {
     }
   },
 
-  handleLinkClick: function () {
+  handleLinkClick: function (event) {
+    event.preventDefault()
     history.push(this.input.path)
   }
 }
