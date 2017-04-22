@@ -1,8 +1,7 @@
 # marko-path-router
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/charlieduong94/marko-path-router.svg)](https://greenkeeper.io/)
-
 [![Build Status](https://travis-ci.org/charlieduong94/marko-path-router.svg?branch=master)](https://travis-ci.org/charlieduong94/marko-path-router)
+[![Greenkeeper badge](https://badges.greenkeeper.io/charlieduong94/marko-path-router.svg)](https://greenkeeper.io/)
 
 Client side routing for [Marko](https://github.com/marko-js/marko) that provides support for
 wildcard, placeholder, and nested routes.
@@ -107,22 +106,28 @@ The `history` object also exposes the native history's `back`, `forward`, and `g
 #### Nested Routes
 
 You can nest routes by providing the optional `nestedRoutes` attribute for a route. The `path` given to
-nested route is appended to it's parent's path when it is created. This can be added to any route, so you
+nested route is appended to it's parent's path when the routing tree is built. This can be added to any route, so you
 have as many layers as you desire.
 
 ```js
 const routes = [
   {
-    path: '/charts', // path: '/charts'
+    path: '/charts',
     component: require('src/components/charts'),
     nestedRoutes: [
-      { path: '/line', component: require('src/components/line-chart') }, // path: '/charts/line'
-      { path: '/bar', component: require('src/components/bar-chart') } // path: '/charts/bar'
+      { path: '/line', component: require('src/components/line-chart') },
+      { path: '/bar', component: require('src/components/bar-chart') }
     ]
   },
-  { path: '/users', component: require('src/components/users') }, // path: '/users'
+  { path: '/users', component: require('src/components/users') },
 ]
 ```
+
+This configuration will create the following routes:
+  - `/charts`
+  - `/charts/line-chart`
+  - `/charts/bar-chart`
+  - `/users`
 
 In the example above, navigating to `/charts` will only render the `charts` component.
 Navigating to `/charts/line`, will render the `charts` component and will also pass the component a `renderBody`
@@ -150,5 +155,52 @@ If we then navigate to `/charts/bar`, the router will simply update the existing
 with a new `renderBody` that will render the `bar-chart` component. So there is no unnecessary rerendering and remounting of
 components.
 
-### Todo:
-  - Add support for server side rendering of routes.
+#### Placeholder routes
+
+Placeholders can be placed into a route by starting a segment of the route with a colon `:`.
+
+For example, let's define the following routes:
+
+```js
+const routes = [
+  { path: '/users/:userId', component: require('src/components/user') },
+  {
+    path: '/groups',
+    component: require('src/components/group-list'),
+    nestedRoutes: [
+      { path: '/:groupId', component: require('src/component/group') }
+    ]
+  },
+]
+```
+
+With a router using the above routes:
+  - Navigating to `/users/1` or `/users/8bdc5071-7de1-4282-af12-f6f0a9c431f1` will render the `user` component.
+  - Navigating to `/users`, `/users/`, or `/users/3/description` will miss and cause the router to emit a `not-found` event.
+  - Navigating to `/group`, will render the `group-list` component and navigating to `/group/26` or `/group/8bdc5071-7de1-4282-af12-f6f0a9c431f1`
+  will render the `group` component as a child of `group-list`.
+
+#### Wildcard routes
+
+Wildcard routes can be configured by adding a `/**` to the end of a route. These will act as a catch-all.
+
+```js
+const routes = [
+  {
+    path: '/user',
+    component: require('src/components/user'),
+    nestedRoutes: [
+      { path: '/info', component: require('src/component/user-info') }
+      { path: '/**', component: require('src/component/user-catch-all') }
+    ]
+  },
+  // catch everything else
+  { path: '/**', component: require('src/component/catch-all') }
+]
+```
+
+With the above configuration:
+  - Navigating to `/user` will render the `user` component.
+  - Navigating to `/user/info` will render the `user` component with the `user-info` component rendered as a child.
+  - Navigating to `/user/2`, or `/user/some/path/that/does-not/exist` will render the `user` component with the `user-catch-all` component rendered as a child.
+  - Any other route will be caught by the wildcard route and will render the `catch-all` component.
