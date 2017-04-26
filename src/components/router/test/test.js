@@ -8,10 +8,16 @@ const WildcardComponent = require('../../../../test/util/test-wildcard-component
 const history = require('../../../history')
 
 const SHOULD_NOT_GET_HERE = new Error('Should not get here.')
+const TEST_COMPONENT = 'test-component'
+const PLACEHOLDER_COMPONENT = 'placeholder-component'
+const WILDCARD_COMPONENT = 'wildcard-component'
 
-function checkIfComponentOutputMatches (component, regex) {
-  const html = component.getEl().outerHTML
-  return html.match(regex)
+function assertRouterIsEmpty (component) {
+  const mountPoint = component.getEl().children[0]
+  assert(mountPoint.getAttribute('class') === 'marko-router-mount-point')
+
+  assert(mountPoint.children.length === 0,
+    'Router mount point should be empty')
 }
 
 describe('router', function () {
@@ -104,76 +110,98 @@ describe('router', function () {
         .getComponent()
     })
 
+    beforeEach(() => {
+      assertRouterIsEmpty(component)
+    })
+
     afterEach(() => {
       component.destroy()
     })
 
     it('should be able to render route based on path pushed to history', () => {
-      let matches = checkIfComponentOutputMatches(component, /test-component/g)
-      assert(matches === null, 'Router should not have rendered any test components')
-
       let historyLen = window.history.length
       history.push('/route')
 
-      matches = checkIfComponentOutputMatches(component, /test-component/g)
-      assert(matches.length === 1, 'A test component should have been rendered')
+      const mountPointEl = component.getEl().children[0]
+      const testComponentEl = mountPointEl.children[0]
+
+      assert(testComponentEl.getAttribute('class') === TEST_COMPONENT,
+        'Mount point should contain a test component')
+
+      // should be nothing rendered within the test component
+      assert(testComponentEl.children.length === 0,
+        'Test component should be empty')
+
       assert(window.history.length === historyLen + 1, 'History should have been pushed')
     })
 
     it('should be able to render route based on path replaced by history', () => {
-      let matches = checkIfComponentOutputMatches(component, /test-component/g)
-      assert(matches === null, 'Router should not have rendered any test components')
-
       history.push('/route/nested')
 
       let historyLen = window.history.length
       history.replace('/route')
 
-      matches = checkIfComponentOutputMatches(component, /test-component/g)
-      assert(matches.length === 1, 'A test component should have been rendered')
+      const mountPointEl = component.getEl().children[0]
+      const testComponentEl = mountPointEl.children[0]
+
+      assert(testComponentEl.getAttribute('class') === TEST_COMPONENT,
+        'Mount point should contain a test component')
+
+      // should be nothing rendered within the test component
+      assert(testComponentEl.children.length === 0,
+        'Test component should be empty')
 
       assert(window.history.length === historyLen, 'History should have been replaced')
       assert(window.history.state.path === '/route')
     })
 
     it('should be able to render nested routes', () => {
-      let matches = checkIfComponentOutputMatches(component, /test-component/g)
-      assert(matches === null, 'Router should not have rendered any test components')
-
       history.push('/route/nested')
 
-      matches = checkIfComponentOutputMatches(component, /test-component/g)
-      assert(matches.length === 2, 'Multiple test components should have been rendered')
+      const mountPointEl = component.getEl().children[0]
+      const testComponentEl = mountPointEl.children[0]
+      assert(testComponentEl.getAttribute('class') === TEST_COMPONENT)
+
+      assert(testComponentEl.children.length === 1,
+        'Test component should not be empty')
+
+      const nestedTestComponentEl = testComponentEl.children[0]
+
+      assert(nestedTestComponentEl.getAttribute('class') === TEST_COMPONENT)
+
+      assert(nestedTestComponentEl.children.length === 0,
+        'There should be nothing nested in the component')
     })
 
     it('should be able to match placeholder routes', () => {
       const placeholderFiller = 'some-filler-for-placeholder'
-      let matches = checkIfComponentOutputMatches(component, /test-component/g)
-      assert(matches === null, 'Router should not have rendered any test components')
 
       history.push('/route/nested/' + placeholderFiller + '/info')
 
-      matches = checkIfComponentOutputMatches(component, /test-component/g)
-      assert(matches.length === 2, 'Multiple test components should have been rendered')
+      const mountPointEl = component.getEl().children[0]
+      const testComponentEl = mountPointEl.children[0]
+      assert(testComponentEl.getAttribute('class') === TEST_COMPONENT)
 
-      matches = checkIfComponentOutputMatches(component, /placeholder-component/g)
-      assert(matches.length === 1, 'Should have found placeholder component')
+      const nestedTestComponentEl = testComponentEl.children[0]
+      assert(nestedTestComponentEl.getAttribute('class') === TEST_COMPONENT)
 
-      matches = checkIfComponentOutputMatches(component, placeholderFiller)
-      assert(matches.length === 1, 'Should have found placeholder data')
+      const placeholderEl = nestedTestComponentEl.children[0]
+      assert(placeholderEl.getAttribute('class') === PLACEHOLDER_COMPONENT)
+      assert(placeholderEl.children.length === 0,
+        'Placeholder element should not contain child components')
     })
 
     it('should be able to match wildcard routes', () => {
-      let matches = checkIfComponentOutputMatches(component, /test-component/g)
-      assert(matches === null, 'Router should not have rendered any test components')
-
       history.push('/route/other-nested/aoij3illjicsef')
 
-      matches = checkIfComponentOutputMatches(component, /test-component/g)
-      assert(matches.length === 2, 'Multiple test components should have been rendered')
+      const mountPointEl = component.getEl().children[0]
+      const testComponentEl = mountPointEl.children[0]
 
-      matches = checkIfComponentOutputMatches(component, /wildcard-component/g)
-      assert(matches.length === 1, 'Should have found wildcard component')
+      const nestedTestComponent = testComponentEl.children[0]
+      assert(nestedTestComponent.getAttribute('class') === TEST_COMPONENT)
+
+      const wildcardComponent = nestedTestComponent.children[0]
+      assert(wildcardComponent.getAttribute('class') === WILDCARD_COMPONENT)
     })
 
     it('should not rerender existing components', () => {
@@ -181,7 +209,9 @@ describe('router', function () {
 
       let componentStack = component._componentStack
 
-      assert(componentStack.length === 2, 'There should be two components being tracked by the router. Actual = ' + componentStack.length)
+      assert(componentStack.length === 2,
+        'There should be two components being tracked by the router. Actual = ' +
+        componentStack.length)
 
       let rootComponent = componentStack[0].component
       let nestedComponent = componentStack[1].component

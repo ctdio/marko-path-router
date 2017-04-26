@@ -24,7 +24,11 @@ describe('router-link component', () => {
     })
 
     const { component } = output
-    const match = component.getEl().outerHTML.match(/test-component/)
-    assert(match, 'Test component should have rendered within the router-link')
+    const routerLinkEl = component.getEl()
+    assert(routerLinkEl.children.length === 1,
+      'Routerlink should only have a single child element')
+
+    const testEl = routerLinkEl.children[0]
+    assert(testEl.getAttribute('class') === 'test-component')
   })
 })
