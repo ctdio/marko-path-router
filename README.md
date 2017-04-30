@@ -4,7 +4,7 @@
 [![Greenkeeper badge](https://badges.greenkeeper.io/charlieduong94/marko-path-router.svg)](https://greenkeeper.io/)
 
 Client side routing for [Marko](https://github.com/marko-js/marko) that provides support for
-wildcard, placeholder, and nested routes.
+wildcard, placeholder, and nested routes. A small demo app can be found [here](https://github.com/charlieduong94/marko-path-router-demo).
 
 ### Installation
 
