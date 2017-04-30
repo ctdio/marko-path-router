@@ -20,6 +20,8 @@
     "cheerio": "^0.22.0",
     "eslint": "^3.19.0",
     "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-node": "^4.2.2",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
     "font-awesome": "^4.7.0",
@@ -32,6 +34,6 @@
   },
   "dependencies": {
     "marko": "^4.2.8",
-    "radix-router": "^1.0.0"
+    "radix-router": "^2.0.0"
   }
 }

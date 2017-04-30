@@ -180,6 +180,18 @@ With a router using the above routes:
   - Navigating to `/group`, will render the `group-list` component and navigating to `/group/26` or `/group/8bdc5071-7de1-4282-af12-f6f0a9c431f1`
   will render the `group` component as a child of `group-list`.
 
+**Note:** The names that are given to placeholder routes do not matter (you should still give them good names though).
+The placeholder values will be added as part of the `input` to the router component under the `params` attribute.
+The `params` are provided as an array with its contents sorted by the order the placeholders are defined on
+the route's path.
+
+For example, with a route defined as `/orgs/:organization/groups/:groupId`, navigating to
+`/orgs/test-organization/groups/test-group` will render a component with `input.params` defined as
+
+```js
+[ 'test-organization', 'test-group' ]
+```
+
 #### Wildcard routes
 
 Wildcard routes can be configured by adding a `/**` to the end of a route. These will act as a catch-all.
