@@ -14,7 +14,7 @@
   "author": "Charlie Duong <charlieduong94@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "babel-preset-env": "^1.4.0",
+    "babel-preset-env": "1.4.0",
     "browser-refresh": "^1.6.0",
     "chai": "^3.5.0",
     "cheerio": "^0.22.0",
