@@ -30,7 +30,7 @@
     "lasso-babel-transform": "^1.0.0",
     "lasso-marko": "^2.0.7",
     "marko-devtools": "^1.0.2",
-    "nyc": "^10.2.0"
+    "nyc": "^11.0.0"
   },
   "dependencies": {
     "marko": "^4.4.5",
