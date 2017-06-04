@@ -31,4 +31,18 @@ describe('router-link component', () => {
     const testEl = routerLinkEl.children[0]
     assert(testEl.getAttribute('class') === 'test-component')
   })
+
+  test('should be able to pass classes down to anchor element', (context) => {
+    const cssClasses = 'some-css-class another-css-class'
+
+    const output = context.render({
+      path: 'some path',
+      class: cssClasses
+    })
+
+    const { component } = output
+    const routerLinkEl = component.getEl()
+    assert(routerLinkEl.className === cssClasses,
+      'Routerlink should only have a single child element')
+  })
 })
