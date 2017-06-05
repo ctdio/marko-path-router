@@ -16,7 +16,7 @@
   "devDependencies": {
     "babel-preset-env": "^1.4.0",
     "browser-refresh": "^1.6.0",
-    "chai": "^3.5.0",
+    "chai": "^4.0.2",
     "cheerio": "^0.22.0",
     "eslint": "^3.19.0",
     "eslint-config-standard": "^10.2.1",
