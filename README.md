@@ -27,6 +27,11 @@ const routes = [
 ]
 ```
 
+**Note:** At the moment, routing only works with renderers that are linked to a component definition
+(either via `class {...}` in a single file component or via an object/class exported in a `component.js` file).
+This is needed because instances of components are tracked to ensure that only the required parts of the view are
+updated.
+
 Next, pass in the `routes` and the `initialRoute` that should be rendered to the `Router` component.
 
 ```js
