@@ -221,3 +221,34 @@ With the above configuration:
   - Navigating to `/user/info` will render the `user` component with the `user-info` component rendered as a child.
   - Navigating to `/user/2`, or `/user/some/path/that/does-not/exist` will render the `user` component with the `user-catch-all` component rendered as a child.
   - Any other route will be caught by the wildcard route and will render the `catch-all` component.
+
+### Passing data to route components
+
+Components that are associated with routes can be given input values via the `injectedInput` attribute.
+This allows data stores, app instances, and other common data to be passed down to route components
+from the root of your application. If you find yourself needing to communicate between components rendered
+via the router, it may be helpful to pass in a common object that can act as an event bus.
+
+```js
+const render = Router.renderSync({
+  initialRoute: '/',
+  injectedInput: {
+    app: myApp,
+    store: myDataStore,
+    foo: 'bar'
+  },
+  routes: [
+    {
+      path: '/user',
+      component: require('src/components/user'),
+      nestedRoutes: [
+        { path: '/info', component: require('src/component/user-info') }
+        { path: '/**', component: require('src/component/user-catch-all') }
+      ]
+    },
+  ]
+})
+```
+
+In the above example, the values specified in `injectedInput` will be passed down to the `user`, `user-info`, and `user-catch-all`
+component when they are rendered.
