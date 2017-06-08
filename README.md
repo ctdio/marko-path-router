@@ -252,3 +252,20 @@ const render = Router.renderSync({
 
 In the above example, the values specified in `injectedInput` will be passed down to the `user`, `user-info`, and `user-catch-all`
 component when they are rendered.
+
+Ex. `src/component/user-info/component.js`
+```js
+module.exports = {
+  onCreate (input) {
+    // input contains the same values as what was passed as "injectedInput"
+    // in the above router
+    const { app, store, foo } = input
+
+    this._dataStore = store
+
+    this.state = { app }
+
+    console.log(foo)
+  }
+}
+```
