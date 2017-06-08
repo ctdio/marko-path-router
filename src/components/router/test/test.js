@@ -73,9 +73,14 @@ describe('router', function () {
 
   context('When pushing routes', () => {
     let component
+    const testInjectedInput = {
+      test: 'test',
+      foo: 'bar'
+    }
 
     beforeEach('Create router for testing', () => {
       const render = Router.renderSync({
+        injectedInput: testInjectedInput,
         routes: [
           {
             path: '/route',
@@ -103,6 +108,7 @@ describe('router', function () {
           }
         ]
       })
+
       // force history to "forget" what has happened
       history._currentPath = null
 
@@ -183,7 +189,7 @@ describe('router', function () {
       assert(testComponentEl.getAttribute('class') === TEST_COMPONENT)
 
       const nestedTestComponentEl = testComponentEl.children[0]
-      assert(nestedTestComponentEl.getAttribute('class') === TEST_COMPONENT)
+      assert(nestedTestComponentEl.getAttribute('class') === TEST_COMPONENT, nestedTestComponentEl.outerHTML)
 
       const placeholderEl = nestedTestComponentEl.children[0]
       assert(placeholderEl.getAttribute('class') === PLACEHOLDER_COMPONENT)
@@ -249,6 +255,22 @@ describe('router', function () {
       history.push('/route that does not exist')
 
       assert(notFoundTriggered, 'not-found event shoud have been triggered')
+    })
+
+    it('should pass along router input to all components route components rendered', () => {
+      let componentStack = component._componentStack
+      history.push('/route/nested')
+
+      componentStack = component._componentStack
+
+      for (let i = 0; i < componentStack.length; i++) {
+        const { component } = componentStack[i]
+
+        assert.equal(component.input.test, testInjectedInput.test,
+          'route component input should contain the injected test attribute')
+        assert.equal(component.input.foo, testInjectedInput.foo,
+          'route component input should contain the injected foo attribute')
+      }
     })
   })
 })

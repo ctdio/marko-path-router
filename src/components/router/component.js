@@ -29,6 +29,18 @@ function _registerRoutes (router, routes, parentPath) {
   }
 }
 
+// perform a shallow copy of an object
+// (only because phantom doesn't have Object.assign)
+function _shallowCopyObject (object) {
+  let newObject = {}
+
+  for (const key in object) {
+    newObject[key] = object[key]
+  }
+
+  return newObject
+}
+
 function _handleRouteChange (self) {
   const router = self._router
 
@@ -46,7 +58,8 @@ function _handleRouteChange (self) {
     // path of the component that is going to be rendered
     let componentPath = routePath
     let component = routeData.component
-    let componentInput = {}
+
+    let componentInput = _shallowCopyObject(self._injectedComponentInput)
     if (params) {
       componentInput.params = params
     }
@@ -78,15 +91,15 @@ function _handleRouteChange (self) {
         let childComponentInput = componentInput
         let childComponentPath = componentPath
 
-        let parentComponentInput = {
-          renderBody: function (out) {
-            nestedRoutePlaceholder.render({
-              path: childComponentPath,
-              component: childComponent,
-              componentInput: childComponentInput,
-              router: self
-            }, out)
-          }
+        let parentComponentInput = _shallowCopyObject(componentInput)
+
+        parentComponentInput.renderBody = function (out) {
+          nestedRoutePlaceholder.render({
+            path: childComponentPath,
+            component: childComponent,
+            componentInput: childComponentInput,
+            router: self
+          }, out)
         }
 
         // current component becomes the parent component
@@ -166,10 +179,11 @@ module.exports = {
 
     const router = this._router = new RadixRouter()
 
+    this._injectedComponentInput = input.injectedInput || {}
+
     // maintain a stack of components that are currently rendered
     this._componentStack = []
     this._componentBuffer = []
-    this.initialRoute = input.initialRoute
 
     // traverse the given routes and create the router
     _registerRoutes(router, input.routes, undefined)
