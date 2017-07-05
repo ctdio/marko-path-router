@@ -17,7 +17,7 @@
     "babel-preset-env": "^1.5.2",
     "browser-refresh": "^1.6.0",
     "chai": "^4.0.2",
-    "cheerio": "^0.22.0",
+    "cheerio": "^1.0.0-rc.2",
     "eslint": "^4.1.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.3.0",
