@@ -29,7 +29,7 @@
     "lasso": "^2.6.1",
     "lasso-babel-transform": "^1.0.0",
     "lasso-marko": "^2.0.7",
-    "marko-devtools": "^1.0.7",
+    "marko-cli": "^1.0.19",
     "nyc": "^11.0.2"
   },
   "dependencies": {
