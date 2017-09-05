@@ -7,8 +7,8 @@ const babelTransform = {
   }
 }
 
-module.exports = function (markoDevtools) {
-  markoDevtools.config.browserBuilder = {
+module.exports = function (markoCli) {
+  markoCli.config.browserBuilder = {
     require: {
       transforms: [ babelTransform ]
     }
