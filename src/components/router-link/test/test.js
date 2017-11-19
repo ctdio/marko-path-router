@@ -3,8 +3,13 @@
 const assert = require('assert')
 const SHOULD_NOT_GET_HERE = new Error('Should not get here.')
 const TestComponent = require('../../../../test/util/test-component')
+const history = require('../../../history')
 
 describe('router-link component', () => {
+  afterEach('reset history to default mode', () => {
+    history.setMode('history')
+  })
+
   test('should throw an error if not given a path', (context) => {
     try {
       context.render({})
@@ -44,5 +49,20 @@ describe('router-link component', () => {
     const routerLinkEl = component.getEl()
     assert(routerLinkEl.className === cssClasses,
       'Routerlink should only have a single child element')
+  })
+
+  test('should prefix output path with "#" if history is set to "hash"', (context) => {
+    history.setMode('hash')
+
+    const path = '/some/path'
+    const expectedPath = '#' + path
+
+    const { component } = context.render({ path })
+    const el = component.getEl()
+    const href = el.getAttribute('href')
+
+    assert(href === expectedPath,
+      'href should be prefixed with "#"\n' +
+      `Actual: ${href}\nExpected: ${expectedPath}`)
   })
 })

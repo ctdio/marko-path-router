@@ -71,6 +71,25 @@ describe('router', function () {
     }
   })
 
+  it('should throw an error if an incorrect mode is passed in', () => {
+    const badMode = 'not an actual mode'
+    try {
+      Router.renderSync({
+        mode: badMode,
+        routes: [
+          {
+            path: '/',
+            component: TestComponent
+          }
+        ]
+      })
+      throw SHOULD_NOT_GET_HERE
+    } catch (err) {
+      let matches = err.message.match(/Unknown mode:/)
+      assert(matches, `Got: ${err.message}\n`)
+    }
+  })
+
   context('When pushing routes', () => {
     let component
     const testInjectedInput = {
