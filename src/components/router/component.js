@@ -170,11 +170,16 @@ function _handleRouteChange (self) {
 module.exports = {
   onCreate: function (input) {
     const routes = input.routes
+    const mode = input.mode
 
     if (!routes) {
       throw new Error('"routes" param must be provided')
     } else if (routes && routes.length === 0) {
       throw new Error('"routes" list cannot be empty')
+    }
+
+    if (mode) {
+      history.setMode(mode)
     }
 
     const router = this._router = new RadixRouter()

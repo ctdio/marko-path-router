@@ -222,6 +222,46 @@ With the above configuration:
   - Navigating to `/user/2`, or `/user/some/path/that/does-not/exist` will render the `user` component with the `user-catch-all` component rendered as a child.
   - Any other route will be caught by the wildcard route and will render the `catch-all` component.
 
+### Hash history
+
+By default, the router will use browser history with regular paths, meaning route changes will
+show up like regular paths in the url. This means that some sort of proxy or catch-all needs
+to be placed in front of your webapp to get the same bundle/html served.
+
+For users that would rather just have their app served up on a cdn without having to set up proxying,
+the router can be set to use `hash` history instead.
+
+This can be done by simplying specifying the router's `mode` to `hash` upon creation.
+
+Example:
+
+```js
+const { Router } = require('marko-path-router')
+
+const render = Router.renderSync({
+  mode: 'hash',
+  {
+    path: '/user',
+    component: require('../components/user'),
+  },
+  initialRoute: '/'
+})
+
+const routerComponent = render.appendTo(targetEl).getComponent()
+```
+
+Besides explicitly specifying the router's `mode`, nothing else about the router's usage
+changes. The router will automatically configure it's internal `history` module to
+listen to use hash history and listen for `hashChange` events.
+
+`router-link` usage stays the same, with the slight difference that the `href`
+is prefixed with a `#` to more accurately portray the correct route.
+
+```marko
+router-link path='/users'
+  -- Goes to /#/users
+```
+
 ### Passing data to route components
 
 Components that are associated with routes can be given input values via the `injectedInput` attribute.
