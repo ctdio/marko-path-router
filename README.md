@@ -240,10 +240,12 @@ const { Router } = require('marko-path-router')
 
 const render = Router.renderSync({
   mode: 'hash',
-  {
-    path: '/user',
-    component: require('../components/user'),
-  },
+  routes: [
+    {
+      path: '/user',
+      component: require('../components/user'),
+    }
+  ],
   initialRoute: '/'
 })
 
