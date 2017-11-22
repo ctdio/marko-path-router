@@ -26,7 +26,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "font-awesome": "^4.7.0",
     "git-hooks": "^1.1.8",
-    "lasso": "^2.6.1",
+    "lasso": "^3.0.0",
     "lasso-babel-transform": "^1.0.0",
     "lasso-marko": "^2.0.7",
     "marko-cli": "^2.0.0",
