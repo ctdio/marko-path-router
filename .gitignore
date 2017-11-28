@@ -1,6 +1,5 @@
 node_modules
 .cache
 *.marko.js
-.marko-devtools
 .marko-cli
 .nyc_output
