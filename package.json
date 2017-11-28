@@ -8,23 +8,20 @@
     "type": "git"
   },
   "scripts": {
-    "lint": "eslint .",
+    "lint": "standard | snazzy",
+    "pretest": "npm run lint",
     "test": "nyc marko test"
   },
   "author": "Charlie Duong <charlieduong94@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "babel-preset-env": "^1.5.2",
-    "eslint": "^4.1.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.3.0",
-    "eslint-plugin-node": "^5.0.0",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1",
     "git-hooks": "^1.1.8",
     "lasso-babel-transform": "^1.0.0",
     "marko-cli": "^2.0.0",
-    "nyc": "^11.0.2"
+    "nyc": "^11.0.2",
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.3"
   },
   "dependencies": {
     "marko": "^4.4.5",
