@@ -49,14 +49,6 @@ function _changeRoute (self, routePath) {
 
   let continueTransition = true
 
-  if (currentRoute && self._afterEach) {
-    if (self._afterEach) {
-      promise = promise.then(() => {
-        self._afterEach(currentRoute, routePath)
-      })
-    }
-  }
-
   if (self._beforeEach) {
     promise = promise.then(() => {
       return new Promise((resolve, reject) => {
@@ -239,6 +231,11 @@ module.exports = {
 
     const onChangeRoute = (routePath) => {
       _changeRoute(self, routePath)
+        .then(() => {
+          if (self._afterEach) {
+            self._afterEach(self.currentRoute, routePath)
+          }
+        })
         .catch((err) => {
           self.emit('error', err)
         })

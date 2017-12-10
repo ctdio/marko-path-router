@@ -378,42 +378,24 @@ describe('router', function () {
           '_afterEach function should match hook')
       })
 
-      context('if no previous transition', () => {
-        it('should not trigger the afterEach hook upon first transition', async () => {
-          let afterEachTriggered = false
-
-          router.afterEach(() => {
-            afterEachTriggered = true
-          })
-
-          history.push('/route')
-          await waitForEvent(router, 'update')
-
-          assert(afterEachTriggered === false,
-            'should NOT have triggered the afterEach hook')
-        })
+      // push first route in to allow for
+      beforeEach(() => {
+        history.push('/route')
+        return waitForEvent(router, 'update')
       })
 
-      context('if previous transition has happened', () => {
-        // push first route in to allow for
-        beforeEach(() => {
-          history.push('/route')
-          return waitForEvent(router, 'update')
+      it('should call the afterEach hook upon transition', async () => {
+        let afterEachTriggered = false
+
+        router.afterEach(() => {
+          afterEachTriggered = true
         })
 
-        it('should call the afterEach hook upon transition', async () => {
-          let afterEachTriggered = false
+        history.push('/other-route')
+        await waitForEvent(router, 'update')
 
-          router.afterEach(() => {
-            afterEachTriggered = true
-          })
-
-          history.push('/other-route')
-          await waitForEvent(router, 'update')
-
-          assert(afterEachTriggered === true,
-            'should have triggered the afterEach hook')
-        })
+        assert(afterEachTriggered === true,
+          'should have triggered the afterEach hook')
       })
     })
   })
