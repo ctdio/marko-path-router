@@ -10,6 +10,9 @@ wildcard, placeholder, and nested routes. A small demo app can be found [here](h
 
 ```bash
 npm install --save marko-path-router
+
+# or if you use yarn
+yarn add marko-path-router
 ```
 
 ### Usage

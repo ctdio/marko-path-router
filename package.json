@@ -15,13 +15,13 @@
   "author": "Charlie Duong <charlieduong94@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "babel-preset-env": "^1.5.2",
     "git-hooks": "^1.1.8",
     "lasso-babel-transform": "^1.0.0",
     "marko-cli": "^2.0.0",
     "nyc": "^11.0.2",
     "snazzy": "^7.0.0",
-    "standard": "^10.0.3"
+    "standard": "^10.0.3",
+    "wait-for-event-promise": "^1.0.3"
   },
   "dependencies": {
     "marko": "^4.4.5",
