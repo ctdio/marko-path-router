@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 const assert = require('assert')
+const waitForEvent = require('wait-for-event-promise')
 
 const Router = require('../index')
 const TestComponent = require('../../../../test/util/test-component')
@@ -12,8 +13,8 @@ const TEST_COMPONENT = 'test-component'
 const PLACEHOLDER_COMPONENT = 'placeholder-component'
 const WILDCARD_COMPONENT = 'wildcard-component'
 
-function assertRouterIsEmpty (component) {
-  const mountPoint = component.getEl().children[0]
+function assertRouterIsEmpty (router) {
+  const mountPoint = router.getEl().children[0]
   assert(mountPoint.getAttribute('class') === 'marko-router-mount-point')
 
   assert(mountPoint.children.length === 0,
@@ -21,7 +22,7 @@ function assertRouterIsEmpty (component) {
 }
 
 describe('router', function () {
-  it('should throw an error if given routes that do not contain a component', () => {
+  it('should throw an error if given routes that do not contain a router', () => {
     try {
       Router.renderSync({
         routes: [
@@ -39,7 +40,7 @@ describe('router', function () {
     try {
       Router.renderSync({
         routes: [
-          { component: TestComponent }
+          { router: TestComponent }
         ]
       })
       throw SHOULD_NOT_GET_HERE
@@ -79,7 +80,7 @@ describe('router', function () {
         routes: [
           {
             path: '/',
-            component: TestComponent
+            router: TestComponent
           }
         ]
       })
@@ -91,7 +92,7 @@ describe('router', function () {
   })
 
   context('When pushing routes', () => {
-    let component
+    let router
     const testInjectedInput = {
       test: 'test',
       foo: 'bar'
@@ -131,79 +132,84 @@ describe('router', function () {
       // force history to "forget" what has happened
       history._currentPath = null
 
-      component = render.appendTo(document.body)
+      router = render.appendTo(document.body)
         .getComponent()
     })
 
     beforeEach(() => {
-      assertRouterIsEmpty(component)
+      assertRouterIsEmpty(router)
     })
 
     afterEach(() => {
-      component.destroy()
+      router.destroy()
     })
 
-    it('should be able to render route based on path pushed to history', () => {
+    it('should be able to render route based on path pushed to history', async () => {
       let historyLen = window.history.length
       history.push('/route')
+      await waitForEvent(router, 'update')
 
-      const mountPointEl = component.getEl().children[0]
+      const mountPointEl = router.getEl().children[0]
       const testComponentEl = mountPointEl.children[0]
 
       assert(testComponentEl.getAttribute('class') === TEST_COMPONENT,
-        'Mount point should contain a test component')
+        'Mount point should contain a test router')
 
-      // should be nothing rendered within the test component
+      // should be nothing rendered within the test router
       assert(testComponentEl.children.length === 0,
-        'Test component should be empty')
+        'Test router should be empty')
 
       assert(window.history.length === historyLen + 1, 'History should have been pushed')
     })
 
-    it('should be able to render route based on path replaced by history', () => {
+    it('should be able to render route based on path replaced by history', async () => {
       history.push('/route/nested')
+      await waitForEvent(router, 'update')
 
       let historyLen = window.history.length
       history.replace('/route')
+      await waitForEvent(router, 'update')
 
-      const mountPointEl = component.getEl().children[0]
+      const mountPointEl = router.getEl().children[0]
       const testComponentEl = mountPointEl.children[0]
 
       assert(testComponentEl.getAttribute('class') === TEST_COMPONENT,
-        'Mount point should contain a test component')
+        'Mount point should contain a test router')
 
-      // should be nothing rendered within the test component
+      // should be nothing rendered within the test router
       assert(testComponentEl.children.length === 0,
-        'Test component should be empty')
+        'Test router should be empty')
 
       assert(window.history.length === historyLen, 'History should have been replaced')
       assert(window.history.state.path === '/route')
     })
 
-    it('should be able to render nested routes', () => {
+    it('should be able to render nested routes', async () => {
       history.push('/route/nested')
+      await waitForEvent(router, 'update')
 
-      const mountPointEl = component.getEl().children[0]
+      const mountPointEl = router.getEl().children[0]
       const testComponentEl = mountPointEl.children[0]
       assert(testComponentEl.getAttribute('class') === TEST_COMPONENT)
 
       assert(testComponentEl.children.length === 1,
-        'Test component should not be empty')
+        'Test router should not be empty')
 
       const nestedTestComponentEl = testComponentEl.children[0]
 
       assert(nestedTestComponentEl.getAttribute('class') === TEST_COMPONENT)
 
       assert(nestedTestComponentEl.children.length === 0,
-        'There should be nothing nested in the component')
+        'There should be nothing nested in the router')
     })
 
-    it('should be able to match placeholder routes', () => {
+    it('should be able to match placeholder routes', async () => {
       const placeholderFiller = 'some-filler-for-placeholder'
 
       history.push('/route/nested/' + placeholderFiller + '/info')
+      await waitForEvent(router, 'update')
 
-      const mountPointEl = component.getEl().children[0]
+      const mountPointEl = router.getEl().children[0]
       const testComponentEl = mountPointEl.children[0]
       assert(testComponentEl.getAttribute('class') === TEST_COMPONENT)
 
@@ -213,13 +219,14 @@ describe('router', function () {
       const placeholderEl = nestedTestComponentEl.children[0]
       assert(placeholderEl.getAttribute('class') === PLACEHOLDER_COMPONENT)
       assert(placeholderEl.children.length === 0,
-        'Placeholder element should not contain child components')
+        'Placeholder element should not contain child routers')
     })
 
-    it('should be able to match wildcard routes', () => {
+    it('should be able to match wildcard routes', async () => {
       history.push('/route/other-nested/aoij3illjicsef')
+      await waitForEvent(router, 'update')
 
-      const mountPointEl = component.getEl().children[0]
+      const mountPointEl = router.getEl().children[0]
       const testComponentEl = mountPointEl.children[0]
 
       const nestedTestComponent = testComponentEl.children[0]
@@ -229,10 +236,11 @@ describe('router', function () {
       assert(wildcardComponent.getAttribute('class') === WILDCARD_COMPONENT)
     })
 
-    it('should not rerender existing components', () => {
+    it('should not rerender existing routers', async () => {
       history.push('/route/nested')
+      await waitForEvent(router, 'update')
 
-      let componentStack = component._componentStack
+      let componentStack = router._componentStack
 
       assert(componentStack.length === 2,
         'There should be two components being tracked by the router. Actual = ' +
@@ -258,29 +266,24 @@ describe('router', function () {
       })
 
       history.push('/route')
+      await waitForEvent(router, 'update')
 
       assert(nestedComponentDestroyed, 'Nested component should have been destroyed')
       assert(!rootComponentDestroyed, 'Root component should not have been destroyed')
       assert(rootComponentUpdated, 'Root component should have been just updated')
     })
 
-    it('should emit an event when a route that is not found given', () => {
-      let notFoundTriggered = false
-
-      component.on('not-found', () => {
-        notFoundTriggered = true
-      })
-
+    it('should emit an event when a route that is not found given', async () => {
       history.push('/route that does not exist')
-
-      assert(notFoundTriggered, 'not-found event shoud have been triggered')
+      await waitForEvent(router, 'not-found')
     })
 
-    it('should pass along router input to all components route components rendered', () => {
-      let componentStack = component._componentStack
+    it('should pass along router input to all route components rendered', async () => {
+      let componentStack = router._componentStack
       history.push('/route/nested')
+      await waitForEvent(router, 'update')
 
-      componentStack = component._componentStack
+      componentStack = router._componentStack
 
       for (let i = 0; i < componentStack.length; i++) {
         const { component } = componentStack[i]
@@ -290,6 +293,128 @@ describe('router', function () {
         assert.equal(component.input.foo, testInjectedInput.foo,
           'route component input should contain the injected foo attribute')
       }
+    })
+  })
+
+  context('global hooks', () => {
+    let router
+
+    beforeEach('render router', () => {
+      const render = Router.renderSync({
+        routes: [
+          {
+            path: '/route',
+            component: TestComponent
+          },
+          {
+            path: '/other-route',
+            component: TestComponent
+          }
+        ]
+      })
+
+      // force history to "forget" what has happened
+      history._currentPath = null
+
+      router = render.appendTo(document.body)
+        .getComponent()
+    })
+
+    context('beforeEach hook', () => {
+      it('should allow for hook to be registered', () => {
+        const hook = () => {}
+        router.beforeEach(hook)
+        assert(router._beforeEach === hook,
+          '_beforeEach function should match hook')
+      })
+
+      it('should pass the currentRoute, next route, and next func in as parameters', async () => {
+        let currentRoute
+        let nextRoute
+
+        router.beforeEach((from, to, next) => {
+          currentRoute = from
+          nextRoute = to
+
+          next()
+        })
+
+        history.push('/route')
+        await waitForEvent(router, 'update')
+
+        assert(currentRoute === null)
+        assert(nextRoute === '/route')
+      })
+
+      it('should halt transition if an error is passed into "next"', async () => {
+        const transitionError = new Error('Not transitioning')
+        router.beforeEach((from, to, next) => next(transitionError))
+
+        history.push('/route')
+        const event = await waitForEvent(router, 'error')
+
+        assert(event === transitionError,
+          'transition-error event should equal the error passed into "next"')
+
+        const mountPointEl = router.getEl().children[0]
+
+        assert(mountPointEl.children.length === 0,
+          'test component should not have rendered')
+      })
+
+      it('should halt transition if false is passed into "next"', () => {
+        router.beforeEach((from, to, next) => next(false))
+
+        history.push('/route')
+        return waitForEvent(router, 'transition-halted')
+      })
+    })
+
+    context('afterEach hook', () => {
+      it('should allow for hooks to be registered', () => {
+        const hook = () => {}
+        router.afterEach(hook)
+        assert(router._afterEach === hook,
+          '_afterEach function should match hook')
+      })
+
+      context('if no previous transition', () => {
+        it('should not trigger the afterEach hook upon first transition', async () => {
+          let afterEachTriggered = false
+
+          router.afterEach(() => {
+            afterEachTriggered = true
+          })
+
+          history.push('/route')
+          await waitForEvent(router, 'update')
+
+          assert(afterEachTriggered === false,
+            'should NOT have triggered the afterEach hook')
+        })
+      })
+
+      context('if previous transition has happened', () => {
+        // push first route in to allow for
+        beforeEach(() => {
+          history.push('/route')
+          return waitForEvent(router, 'update')
+        })
+
+        it('should call the afterEach hook upon transition', async () => {
+          let afterEachTriggered = false
+
+          router.afterEach(() => {
+            afterEachTriggered = true
+          })
+
+          history.push('/other-route')
+          await waitForEvent(router, 'update')
+
+          assert(afterEachTriggered === true,
+            'should have triggered the afterEach hook')
+        })
+      })
     })
   })
 })

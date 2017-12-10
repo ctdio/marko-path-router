@@ -41,10 +41,45 @@ function _shallowCopyObject (object) {
   return newObject
 }
 
-function _handleRouteChange (self) {
+function _changeRoute (self, routePath) {
   const router = self._router
 
-  return function (routePath) {
+  let promise = Promise.resolve()
+  const currentRoute = self.currentRoute
+
+  let continueTransition = true
+
+  if (currentRoute && self._afterEach) {
+    if (self._afterEach) {
+      promise = promise.then(() => {
+        self._afterEach(currentRoute, routePath)
+      })
+    }
+  }
+
+  if (self._beforeEach) {
+    promise = promise.then(() => {
+      return new Promise((resolve, reject) => {
+        self._beforeEach(currentRoute, routePath, (input) => {
+          if (input instanceof Error) {
+            continueTransition = false
+            return reject(input)
+          } else if (input === false) {
+            continueTransition = false
+          }
+
+          resolve()
+        })
+      })
+    })
+  }
+
+  return promise.then(() => {
+    if (!continueTransition) {
+      self.emit('transition-halted')
+      return
+    }
+
     let routeData = router.lookup(routePath)
 
     if (!routeData) {
@@ -164,7 +199,7 @@ function _handleRouteChange (self) {
       self.currentRoute = routePath
       self.emit('update')
     }
-  }
+  })
 }
 
 module.exports = {
@@ -184,11 +219,15 @@ module.exports = {
 
     const router = this._router = new RadixRouter()
 
+    this.currentRoute = null
     this._injectedComponentInput = input.injectedInput || {}
 
     // maintain a stack of components that are currently rendered
     this._componentStack = []
     this._componentBuffer = []
+
+    this._beforeEach = null
+    this._afterEach = null
 
     // traverse the given routes and create the router
     _registerRoutes(router, input.routes, undefined)
@@ -198,11 +237,17 @@ module.exports = {
     const self = this
     const initialRoute = self.input && self.input.initialRoute
 
-    let changeHandler = _handleRouteChange(self)
-    history.on('change-route', changeHandler)
+    const onChangeRoute = (routePath) => {
+      _changeRoute(self, routePath)
+        .catch((err) => {
+          self.emit('error', err)
+        })
+    }
+
+    history.on('change-route', onChangeRoute)
 
     self.on('destroy', () => {
-      history.removeListener('change-route', changeHandler)
+      history.removeListener('change-route', onChangeRoute)
     })
 
     if (initialRoute) {
@@ -223,5 +268,17 @@ module.exports = {
         component: component
       })
     }
+  },
+
+  beforeEach: function (beforeEachFunc) {
+    assert(typeof beforeEachFunc === 'function',
+      'Input to "beforeEach" must be a function')
+    this._beforeEach = beforeEachFunc
+  },
+
+  afterEach: function (afterEachFunc) {
+    assert(typeof afterEachFunc === 'function',
+      'Input to "afterEach" must be a function')
+    this._afterEach = afterEachFunc
   }
 }
