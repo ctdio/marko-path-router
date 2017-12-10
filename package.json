@@ -1,6 +1,6 @@
 {
   "name": "marko-path-router",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Routing for marko widgets",
   "main": "index.js",
   "repository": {
