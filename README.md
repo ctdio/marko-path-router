@@ -339,7 +339,7 @@ For the `afterEach` hook, only the `from` (current route), `to` (next route) are
 passed into the callback.
 
 Ex.
-```
+```js
 const { Router } = require('marko-path-router')
 
 const render = Router.renderSync({
