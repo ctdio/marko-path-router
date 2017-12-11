@@ -314,3 +314,47 @@ module.exports = {
   }
 }
 ```
+
+### Global hooks
+
+Global `beforeEach` and `afterEach` hooks can be registered to allow for a little more
+control over route transitions.
+
+#### The `beforeEach` hook
+
+For the `beforeEach` hook, the `from` (current route), `to` (next route) and `next` function
+are passed in to the callback.
+
+If the `next` function is invoked without any arguments, the transition will continue to
+execute and the next route will be rendered.
+
+If an `error` is passed into the `next` function, the router will halt the transition
+and emit and `error` event.
+
+If `false` is passed into the `next` function, the router will just halt the transition.
+
+#### The `afterEach` hook
+
+For the `afterEach` hook, only the `from` (current route), `to` (next route) are
+passed into the callback.
+
+Ex.
+```
+const { Router } = require('marko-path-router')
+
+const render = Router.renderSync({
+  routes: routes,
+  initialRoute: '/'
+})
+
+const router = render.appendTo(targetEl).getComponent()
+
+router.beforeEach((from, to, next) => {
+  console.log(`Starting transition from ${from} to ${to}!`)
+  next()
+})
+
+router.afterEach((from, to) => {
+  console.log(`Completed transition from ${from} to ${to}!`)
+})
+```
