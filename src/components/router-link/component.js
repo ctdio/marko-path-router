@@ -1,3 +1,8 @@
+/**
+ * This is a simple link component that allows for easy
+ * route changes without having to manually push data to
+ * the history object.
+ */
 const history = require('../../history')
 const modifyPath = require('../../util/modifyPath')
 
