@@ -25,6 +25,6 @@
   },
   "dependencies": {
     "marko": "^4.4.5",
-    "radix-router": "^2.0.0"
+    "radix-router": "^3.0.0"
   }
 }
