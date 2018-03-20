@@ -150,7 +150,11 @@ function _changeRoute (self, routePath) {
         for (var i = 0; i < componentStack.length; i++) {
           if (routePath === componentStack[i].path) {
             existingComponent = componentStack[i].component
-            componentStack = componentStack.slice(0, i + 1)
+
+            // Update component stack to use
+            self._componentStack =
+              componentStack =
+              componentStack.slice(0, i + 1)
             break
           }
         }
@@ -230,12 +234,13 @@ function _changeRoute (self, routePath) {
           var render = component.renderSync(componentInput)
           render.replaceChildrenOf(self.getEl('mount-point'))
 
-          // TODO: handle renderers that are not components
           try {
-            self._componentStack = [{
-              path: componentPath,
-              component: render.getComponent()
-            }]
+            self._componentStack = [
+              {
+                path: componentPath,
+                component: render.getComponent()
+              }
+            ]
           } catch (err) {
             console.warn('No component to retrieve, not pushing to stack')
           }
@@ -249,6 +254,7 @@ function _changeRoute (self, routePath) {
         // clear the old component buffer
         self._componentBuffer = []
         self.currentRoute = routePath
+
         self.emit('update')
       }
     })

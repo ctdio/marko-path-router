@@ -400,10 +400,10 @@ describe('router', function () {
     })
   })
 
-  context('per-route guard', () => {
+  context.skip('per-route guard', () => {
     context('beforeEnter', () => {
       it('should run route guard for specific routes', () => {
-
+        // TODO
       })
     })
   })
