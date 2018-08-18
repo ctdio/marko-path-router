@@ -17,7 +17,7 @@
   "devDependencies": {
     "git-hooks": "^1.1.8",
     "lasso-babel-transform": "^1.0.0",
-    "marko-cli": "^2.2.2",
+    "marko-cli": "^4.0.4",
     "nyc": "^11.0.2",
     "snazzy": "^7.0.0",
     "standard": "^11.0.0",
