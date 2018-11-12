@@ -24,7 +24,7 @@
     "wait-for-event-promise": "^1.0.3"
   },
   "dependencies": {
-    "marko": "^4.9.2",
+    "marko": "^4.13.9",
     "radix-router": "^2.0.0"
   }
 }
