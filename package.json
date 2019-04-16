@@ -18,7 +18,7 @@
     "git-hooks": "^1.1.8",
     "lasso-babel-transform": "^1.0.0",
     "marko-cli": "^2.2.2",
-    "nyc": "^11.0.2",
+    "nyc": "^14.0.0",
     "snazzy": "^7.0.0",
     "standard": "^11.0.0",
     "wait-for-event-promise": "^1.0.3"
